@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- ============================================================
+       index.html — Student Registration System
+       Author : Keerthi-DC
+       Purpose: Register, view, edit and delete student records.
+       ============================================================ -->
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- SEO Meta Tags -->
+  <meta name="description"
+        content="A modern Student Registration System to register, view, edit and delete student records with local storage persistence." />
+  <meta name="keywords"    content="student registration, student records, school management" />
+  <meta name="author"      content="Keerthi-DC" />
+
+  <!-- Open Graph (social sharing) -->
+  <meta property="og:title"       content="Student Registration System" />
+  <meta property="og:description" content="Manage student records easily — add, edit, delete and search." />
+  <meta property="og:type"        content="website" />
+
+  <title>Student Registration System</title>
+
+  <!-- External Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- ════════════════════════════════════════
+       NAVIGATION BAR  (Task 2 / Task 4)
+  ════════════════════════════════════════ -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <!-- Brand / Logo -->
+    <div class="navbar-brand">
+      <span class="brand-icon" aria-hidden="true">🎓</span>
+      Student Registration
+    </div>
+
+    <!-- Nav Links — smooth-scroll to page sections -->
+    <ul class="navbar-links">
+      <li><a href="#formSection"    class="active" id="nav-register">Register</a></li>
+      <li><a href="#recordsSection" id="nav-records">Records</a></li>
+    </ul>
+  </nav>
+
+  <!-- Toast notification container (populated by JS) -->
+  <div id="toastContainer" role="alert" aria-live="polite"></div>
+
+  <!-- ════════════════════════════════════════
+       DELETE CONFIRMATION MODAL
+  ════════════════════════════════════════ -->
+  <div id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <h3 id="modalTitle">⚠️ Confirm Deletion</h3>
+      <p>
+        Are you sure you want to delete the record for
+        <strong id="deleteStudentName"></strong>?
+        This action cannot be undone.
+      </p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="cancelDeleteBtn">Cancel</button>
+        <button class="btn btn-danger"    id="confirmDeleteBtn">🗑 Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       PAGE WRAPPER
+  ════════════════════════════════════════ -->
+  <div class="wrapper">
+
+    <!-- ── HERO HEADER (Task 2) ── -->
+    <header class="hero" role="banner">
+      <div class="hero-badge" aria-label="System type">
+        <span>🎓</span> Academic Management Portal
+      </div>
+
+      <!-- h1: single per page for SEO -->
+      <h1 class="hero-title">Student Registration System</h1>
+
+      <p class="hero-desc">
+        Seamlessly register, manage, and track student records.
+        All data is stored locally in your browser — no sign-in required.
+      </p>
+
+      <!-- Stats Bar (Task 4 / dynamic via JS) -->
+      <div class="stats-bar" role="region" aria-label="Summary statistics">
+        <div class="stat-item">
+          <div class="stat-value" id="statTotal">0</div>
+          <div class="stat-label">Total Students</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="statActive">0</div>
+          <div class="stat-label">Active Records</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ══════════════════════════════════════
+         SECTION 1 — REGISTRATION FORM (Task 3)
+    ══════════════════════════════════════ -->
+    <section id="formSection" aria-labelledby="formTitle">
+      <div class="card">
+        <!-- Card Header -->
+        <div class="card-header">
+          <div class="icon" aria-hidden="true">✏️</div>
+          <div>
+            <h2 id="formTitle">Register Student</h2>
+            <p id="formSubtitle">Fill in the details to add a new student.</p>
+          </div>
+        </div>
+
+        <!-- Registration Form -->
+        <form id="registrationForm" novalidate aria-label="Student registration form">
+          <div class="form-grid">
+
+            <!-- Student Name -->
+            <div class="form-group">
+              <label class="form-label" for="studentName">
+                Student Name <span class="required" aria-label="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="studentName"
+                class="form-input"
+                placeholder="e.g. Keerthi Reddy"
+                autocomplete="name"
+                aria-describedby="studentNameError"
+                aria-required="true"
+              />
+              <!-- Inline validation message -->
+              <span class="field-error" id="studentNameError" role="alert"></span>
+            </div>
+
+            <!-- Student ID -->
+            <div class="form-group">
+              <label class="form-label" for="studentId">
+                Student ID <span class="required" aria-label="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="studentId"
+                class="form-input"
+                placeholder="e.g. 20240001"
+                inputmode="numeric"
+                aria-describedby="studentIdError"
+                aria-required="true"
+              />
+              <span class="field-error" id="studentIdError" role="alert"></span>
+            </div>
+
+            <!-- Email ID -->
+            <div class="form-group">
+              <label class="form-label" for="emailId">
+                Email Address <span class="required" aria-label="required">*</span>
+              </label>
+              <input
+                type="email"
+                id="emailId"
+                class="form-input"
+                placeholder="e.g. student@college.edu"
+                autocomplete="email"
+                aria-describedby="emailIdError"
+                aria-required="true"
+              />
+              <span class="field-error" id="emailIdError" role="alert"></span>
+            </div>
+
+            <!-- Contact Number -->
+            <div class="form-group">
+              <label class="form-label" for="contactNumber">
+                Contact Number <span class="required" aria-label="required">*</span>
+              </label>
+              <input
+                type="tel"
+                id="contactNumber"
+                class="form-input"
+                placeholder="e.g. 9876543210"
+                inputmode="numeric"
+                maxlength="15"
+                aria-describedby="contactNumberError"
+                aria-required="true"
+              />
+              <span class="field-error" id="contactNumberError" role="alert"></span>
+            </div>
+
+          </div><!-- /form-grid -->
+
+          <!-- Action Buttons -->
+          <div class="btn-row">
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+              ✚ Add Student
+            </button>
+            <button type="button" class="btn btn-secondary" id="resetBtn">
+              ↺ Reset
+            </button>
+          </div>
+        </form>
+      </div><!-- /card -->
+    </section>
+
+    <!-- ══════════════════════════════════════
+         SECTION 2 — RECORDS TABLE (Task 4)
+    ══════════════════════════════════════ -->
+    <section id="recordsSection" aria-labelledby="recordsHeading">
+      <div class="card">
+        <!-- Card Header -->
+        <div class="card-header">
+          <div class="icon" aria-hidden="true">📋</div>
+          <div>
+            <h2 id="recordsHeading">Registered Students</h2>
+            <p>All stored student records — edit or delete as needed.</p>
+          </div>
+        </div>
+
+        <!-- Toolbar: Search + Count -->
+        <div class="table-toolbar">
+          <div class="search-box" role="search">
+            <span class="search-icon" aria-hidden="true">🔍</span>
+            <input
+              type="search"
+              id="searchInput"
+              placeholder="Search by name, ID, email…"
+              aria-label="Search student records"
+            />
+          </div>
+          <span class="record-count" id="recordCount" aria-live="polite">0 records</span>
+        </div>
+
+        <!-- Scrollable Table Container (overflow-y managed by JS for dynamic scrollbar) -->
+        <div class="table-outer">
+          <div id="tableContainer" role="region" aria-label="Student records table" tabindex="0">
+            <table class="data-table" aria-label="Student records">
+              <!-- Table Head with sortable columns -->
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col" data-sort="studentName"   onclick="handleSort('studentName')"   tabindex="0" title="Sort by name">
+                    Name <span class="sort-icon" aria-hidden="true">↕</span>
+                  </th>
+                  <th scope="col" data-sort="studentId"     onclick="handleSort('studentId')"     tabindex="0" title="Sort by ID">
+                    Student ID <span class="sort-icon" aria-hidden="true">↕</span>
+                  </th>
+                  <th scope="col" data-sort="emailId"       onclick="handleSort('emailId')"       tabindex="0" title="Sort by email">
+                    Email <span class="sort-icon" aria-hidden="true">↕</span>
+                  </th>
+                  <th scope="col" data-sort="contactNumber" onclick="handleSort('contactNumber')" tabindex="0" title="Sort by contact">
+                    Contact No. <span class="sort-icon" aria-hidden="true">↕</span>
+                  </th>
+                  <th scope="col">Actions</th>
+                </tr>
+              </thead>
+              <!-- Table Body populated by script.js → renderTable() -->
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div><!-- /#tableContainer -->
+        </div><!-- /.table-outer -->
+
+      </div><!-- /card -->
+    </section>
+
+  </div><!-- /.wrapper -->
+
+  <!-- ════════════════════════════════════════
+       FOOTER
+  ════════════════════════════════════════ -->
+  <footer class="footer" role="contentinfo">
+    <p>© 2024 Student Registration System &mdash; Built by Keerthi-DC</p>
+  </footer>
+
+  <!-- JavaScript (loaded last for performance) -->
+  <script src="script.js"></script>
+
+</body>
+</html>
