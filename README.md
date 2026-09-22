@@ -1,3 +1,5 @@
+# github-"https://github.com/Keerthi-DC/student_registration_system"
+
 # 🎓 Student Registration System
 
 A modern, fully responsive **Student Registration System** built with vanilla HTML, CSS, and JavaScript.  
